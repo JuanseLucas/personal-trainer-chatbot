@@ -6,7 +6,7 @@ import os
 app = Flask(__name__)
 
 # Set up OpenAI API key from environment variable
-openai.api_key = os.getenv('sk-proj-ZsU8BzB]F]sreeAXwBByT3BLbkF]VwsRuH92Dxh02xLduouG')
+openai.api_key = os.getenv('OPENAI_API_KEY')
 
 # Ensure the uploads directory exists
 UPLOAD_FOLDER = 'uploads'
@@ -19,12 +19,14 @@ def index():
 @app.route('/chat', methods=['POST'])
 def chat():
     user_input = request.json['message']
-    response = openai.Completion.create(
-        engine="text-davinci-003",
-        prompt=user_input,
-        max_tokens=150
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": user_input}
+        ]
     )
-    return jsonify({"response": response.choices[0].text.strip()})
+    return jsonify({"response": response['choices'][0]['message']['content'].strip()})
 
 @app.route('/details', methods=['POST'])
 def details():
@@ -44,16 +46,18 @@ def upload_video():
 
     # Generate response using GPT-4
     prompt = f"The user uploaded a video. Here are the findings: {analysis_result}. Provide feedback and corrective actions."
-    response = openai.Completion.create(
-        engine="text-davinci-003",
-        prompt=prompt,
-        max_tokens=150
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You are a helpful injury prevention assistant for athletes."},
+            {"role": "user", "content": prompt}
+        ]
     )
 
     # Remove the local file
     os.remove(file_path)
 
-    return jsonify({"response": response.choices[0].text.strip()})
+    return jsonify({"response": response['choices'][0]['message']['content'].strip()})
 
 def analyze_video(file_path):
     # Placeholder for video analysis logic
