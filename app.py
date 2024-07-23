@@ -6,7 +6,7 @@ import os
 app = Flask(__name__)
 
 # Set up OpenAI API key from environment variable
-openai.api_key = os.getenv('OPENAI_API_KEY')
+openai.api_key = os.getenv('sk-proj-ZsU8BzB]F]sreeAXwBByT3BLbkF]VwsRuH92Dxh02xLduouG')
 
 # Ensure the uploads directory exists
 UPLOAD_FOLDER = 'uploads'
