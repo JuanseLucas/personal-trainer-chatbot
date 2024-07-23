@@ -5,7 +5,12 @@ import os
 
 app = Flask(__name__)
 
+# Set up OpenAI API key from environment variable
 openai.api_key = os.getenv('sk-proj-ZsU8BzB]F]sreeAXwBByT3BLbkF]VwsRuH92Dxh02xLduouG')
+
+# Ensure the uploads directory exists
+UPLOAD_FOLDER = 'uploads'
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 @app.route('/')
 def index():
@@ -31,7 +36,7 @@ def details():
 def upload_video():
     file = request.files['video']
     filename = file.filename
-    file_path = os.path.join("/persistent/uploads", filename)
+    file_path = os.path.join(UPLOAD_FOLDER, filename)
     file.save(file_path)
 
     # Analyze the video
@@ -45,7 +50,7 @@ def upload_video():
         max_tokens=150
     )
 
-    # Optionally remove the local file if storage management is needed
+    # Remove the local file
     os.remove(file_path)
 
     return jsonify({"response": response.choices[0].text.strip()})
