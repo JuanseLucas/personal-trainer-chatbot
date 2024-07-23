@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Trainer Chatbot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div id="chat-container">
+        <div id="chat-box"></div>
+        <input type="text" id="user-input" placeholder="Type a message...">
+        <button id="send-btn">Send</button>
+        <button id="upload-video-btn">Upload Video</button>
+        <input type="file" id="video-input" accept="video/*" style="display:none;">
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#send-btn').click(function() {
+                var userInput = $('#user-input').val();
+                $.ajax({
+                    url: '/chat',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ message: userInput }),
+                    success: function(response) {
+                        $('#chat-box').append('<p>' + response.response + '</p>');
+                        $('#user-input').val('');
+                    }
+                });
+            });
+
+            $('#upload-video-btn').click(function() {
+                $('#video-input').click();
+            });
+
+            $('#video-input').change(function() {
+                var file = this.files[0];
+                var formData = new FormData();
+                formData.append('video', file);
+
+                $.ajax({
+                    url: '/upload_video',
+                    method: 'POST',
+                    processData: false,
+                    contentType: false,
+                    data: formData,
+                    success: function(response) {
+                        $('#chat-box').append('<p>' + response.response + '</p>');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
